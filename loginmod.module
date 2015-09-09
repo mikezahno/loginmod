@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * Implements hook_menu_alter().
+ *
+ * Add a new tab on the login page.
+ */
+function loginmod_menu_alter(&$items) {
+  if (isset($items['user'])) {
+    $items['user/customreg'] = array(
+      'title' => 'Registration',
+      'page callback' => 'loginmod_user_redirect',
+      'access callback' => 'loginmod_register_access',
+      'type' => MENU_LOCAL_TASK,
+    );
+  }
+}
+
+/**
+ * Determines if the current user has access to the user registration page.
+ *
+ * @return bool
+ *   TRUE if the user is not already logged in and can register for an account.
+ */
+function loginmod_register_access() {
+  // return user_is_anonymous() && variable_get('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+  return user_is_anonymous();
+}
+
+/**
+ * Implements hook_user_hook_redirect().
+ *
+ */
+function loginmod_user_redirect() {
+  // Add an existing path for your custom tab
+  drupal_goto("register");
+}
+
+/**
+ * Implements hook_user_login().
+ *
+ * Show frontsite after login (i18n)
+ */
+function loginmod_user_login(&$edit, $account)  {
+  global $language;
+  $langcode = isset($language) ? $language->language : NULL;
+  if (module_exists('i18n_variable') && $langcode) {
+    $front = i18n_variable_get('site_frontpage', $langcode);
+  }
+  else {
+    $front = variable_get('site_frontpage', FALSE);
+  }
+  drupal_goto($front);
+}

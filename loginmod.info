@@ -1,0 +1,6 @@
+name           = Loginmod
+description    = Extend the Drupal Login
+core           = 7.x
+package        = Interface
+dependencies[] = i18n_variable
+
